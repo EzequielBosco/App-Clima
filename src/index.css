@@ -1,27 +1,47 @@
 :root {
-  color-scheme: light dark;
+  --color-a: rgba(206, 215, 224, 0.411);
+  --color-b: rgb(25, 118, 210);
+}
 
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body {
+  background-image: url(../public/fondo-cielo.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: "Roboto", sans-serif;
+  background-color: #e4e4e4 !important;
+}
+
+nav {
+  background-color: white;
 }
 
 a {
   font-weight: 500;
   color: #000000;
   text-decoration: inherit;
+  transition: 0.18s ease-in-out;
 }
 a:hover {
-  color: #292929;
+  color: var(--color-b);
 }
 
-body {
-  font-family: "Roboto", sans-serif;
+main {
+  flex: 1;
+  margin: 5rem;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: white;
 }
 
 h1 {
   color: black;
+  font-weight: 400 !important;
 }
 
 button {
@@ -42,7 +62,17 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+.card {
+  background-color: var(--color-a);
+}
+
+footer {
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+}
+
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -53,4 +83,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

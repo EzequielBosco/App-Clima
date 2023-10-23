@@ -1,7 +1,8 @@
 import { Box, Container, TextField, Typography } from '@mui/material'
-import './App.css'
 import { useState } from 'react'
 import { LoadingButton } from '@mui/lab'
+import Footer from './components/Footer'
+import Navbar from './components/Navbar'
 
 function App() {
   
@@ -17,11 +18,22 @@ function App() {
     temp: "",
     humidity: "", 
     pressure: "",
-    condition: "",
+    wind: "",
     description: "",
     icon: "",
     conditionText: ""
   })
+
+  let descriptionEs = {
+    'clear sky': 'Cielo despejado',
+    'few clouds': 'Pocas nubes',
+    'scattered clouds': 'Nubosidad dispersa',
+    'broken clouds': 'Nubosidad rota',
+    'overcast clouds': 'Cielo nublado',
+    'light rain': 'Lluvia ligera',
+    'moderate rain': 'Lluvia moderada',
+    'mist': 'Neblina'
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -36,19 +48,29 @@ function App() {
 
       const response = await fetch(`${API_WEATHER}`)
       const data = await response.json()
-      if (data.error) throw { message: data.error.message }
+      
+      // if (data.error) throw { message: data.error.message }
+      if (data.cod && data.cod === "404") {
+        throw { message: "Ingrese una ciudad válida" }
+      }
 
       setWeather({
         city: data.name,
         country: data.sys.country,
-        temp: data.main.temp,
+        temp: (data.main.temp - 273.15).toFixed(0),
         humidity: data.main.humidity,
         pressure: data.main.pressure,
-        condition: data.weather[0].id,
+        wind: (data.wind.speed * 3.6),
         description: data.weather[0].description,
         icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`,
         conditionText: data.weather[0].main
       })
+
+      if (weather.description in descriptionEs) {
+        descriptionEs = descriptionEs[weather.description]
+      } else {
+        descriptionEs = data.weather[0].description
+      }
 
     } catch (error) {
       setError({
@@ -61,46 +83,59 @@ function App() {
   }
 
   return (
-    <>
-      <Container>
-        <Typography variant='h1' component='h2' align='center' gutterBottom>App Clima</Typography>
-        <Box component='form' autoComplete='off' onSubmit={onSubmit}>
-          <TextField sx={{ pb:"15px" }}
-            id='city' 
-            label='Ciudad' 
-            variant='outlined' 
-            value={city} 
-            onChange={(e) => setCity(e.target.value)} 
-            error={error.error} 
-            helperText={error.message}
-            fullWidth 
-            required>
-          </TextField>
-          <LoadingButton 
-            type='submit' 
-            variant='contained' 
-            loading={loading} 
-            loadingIndicator="Cargando.."
-          >
-            Buscar
-          </LoadingButton>
-        </Box>
-
-        {weather.city && (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2, textAlign: "center" }}>
-            <Container sx={{ display:"flex", justifyContent: "center" , alignItems: "center" }}>
-              <Typography variant='h3' component="h2">{weather.city}, {weather.country}</Typography>
-              <Box component="img" alt={weather.conditionText} width="100px" src={weather.icon} sx={{ textAlign: "center" }}/>
-            </Container>
-            <Typography variant='h4' component="h3">Humedad = {weather.humidity}</Typography>
-            <Typography variant='h5' component="h3">Presión = {weather.pressure}</Typography>
-            <Typography variant='h5' component="h3">Temperatura = {weather.temp}</Typography>
-            <Typography variant='h6' component="h3">Descripción = {weather.description}</Typography>
+    <div className='app-container'>
+      <Navbar />
+        <Container component="main">
+          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <Typography variant='h2' component='h1' align='center' sx={{mt: "5px", mb: "30px"}}>Clima View</Typography>
+            <Box component="img" alt="Logo clima" width="100px" src="/logo.png" sx={{ textAlign: "center" }}/>
           </Box>
-        )}
-        
-      </Container>
-    </>
+          <Typography variant='h5' component='h2' align='center' sx={{ display: "flex" }} gutterBottom>Tiempo en ...</Typography>
+          <Box component='form' autoComplete='off' onSubmit={onSubmit}>
+            <TextField sx={{ pb:"15px" }}
+              id='city' 
+              label='Ciudad' 
+              variant='outlined' 
+              value={city} 
+              onChange={(e) => setCity(e.target.value)} 
+              error={error.error} 
+              helperText={error.message}
+              fullWidth 
+              required>
+            </TextField>
+            <LoadingButton 
+              type='submit' 
+              variant='contained' 
+              loading={loading} 
+              loadingIndicator="Cargando.."
+            >
+              Buscar
+            </LoadingButton>
+          </Box>
+
+          {weather.city && (
+            <Box className="card" sx={{ 
+              mt: 2, 
+              pb: 3, 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: 2, 
+              textAlign: "center",
+              borderRadius: "5px" }}>
+              <Typography variant='h3' component="h2" sx={{ mt: 2}}>Tiempo en {weather.city}, {weather.country}</Typography>
+              <Box sx={{ display:"flex", justifyContent: "center" , alignItems: "center" }}>
+                <Box component="img" alt={weather.conditionText} width="80px" src={weather.icon} sx={{ textAlign: "center" }}/>
+                <Typography variant='h2' component="h3">{weather.temp}°</Typography>
+              </Box>
+              <Typography variant='h5' component="h3"><strong>{descriptionEs[weather.description || weather.description]}</strong></Typography>
+              <Typography variant='h6' component="h3">Humedad de un {weather.humidity}%</Typography>
+              <Typography variant='h6' component="h3">Presión de {weather.pressure} hPa</Typography>
+              <Typography variant='h6' component="h3">Viento a {weather.wind} km/h</Typography>
+            </Box>
+          )}          
+        </Container>
+        <Footer />
+    </div>
   )
 }
 
