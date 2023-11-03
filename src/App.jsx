@@ -60,7 +60,7 @@ function App() {
         temp: (data.main.temp - 273.15).toFixed(0),
         humidity: data.main.humidity,
         pressure: data.main.pressure,
-        wind: (data.wind.speed * 3.6),
+        wind: (data.wind.speed * 3.6).toFixed(1),
         description: data.weather[0].description,
         icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`,
         conditionText: data.weather[0].main
@@ -88,7 +88,7 @@ function App() {
         <Container component="main">
           <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             <Typography variant='h2' component='h1' align='center' sx={{mt: "5px", mb: "30px"}}>Clima View</Typography>
-            <Box component="img" alt="Logo clima" width="100px" src="/logo.png" sx={{ textAlign: "center" }}/>
+            <Box component="img" alt="Logo clima" width="80px" src="/logo.png" sx={{ textAlign: "center" }}/>
           </Box>
           <Typography variant='h5' component='h2' align='center' sx={{ display: "flex" }} gutterBottom>Tiempo en ...</Typography>
           <Box component='form' autoComplete='off' onSubmit={onSubmit}>
@@ -108,6 +108,7 @@ function App() {
               variant='contained' 
               loading={loading} 
               loadingIndicator="Cargando.."
+              sx={{ paddingLeft: 2.5, paddingRight: 2.5 }}
             >
               Buscar
             </LoadingButton>
